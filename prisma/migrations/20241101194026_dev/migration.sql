@@ -8,7 +8,7 @@ CREATE TABLE [dbo].[User] (
     [email] VARCHAR(250) NOT NULL,
     [hashedPassword] VARCHAR(250) NOT NULL,
     [isEnabled] BIT NOT NULL CONSTRAINT [User_isEnabled_df] DEFAULT 1,
-    [roleId] INT NOT NULL,
+    [roleId] UNIQUEIDENTIFIER NOT NULL,
     [version] INT NOT NULL CONSTRAINT [User_version_df] DEFAULT 1,
     CONSTRAINT [User_pkey] PRIMARY KEY CLUSTERED ([id]),
     CONSTRAINT [User_email_key] UNIQUE NONCLUSTERED ([email])
@@ -16,7 +16,7 @@ CREATE TABLE [dbo].[User] (
 
 -- CreateTable
 CREATE TABLE [dbo].[Role] (
-    [id] INT NOT NULL IDENTITY(1,1),
+    [id] UNIQUEIDENTIFIER NOT NULL CONSTRAINT [Role_id_df] DEFAULT (newid()),
     [name] VARCHAR(250) NOT NULL,
     [description] VARCHAR(250) NOT NULL,
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Role_createdAt_df] DEFAULT CURRENT_TIMESTAMP,

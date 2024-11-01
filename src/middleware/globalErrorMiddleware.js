@@ -28,7 +28,7 @@ export default (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = { ...err };
+    const error = { ...err };
     error.message = err.message;
 
     sendErrorProd(error, req, res);

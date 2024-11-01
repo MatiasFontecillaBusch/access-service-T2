@@ -14,20 +14,14 @@ process.on('uncaughtException', (err) => {
 });
 
 dotenv.config({ path: './.env' });
-import { connect } from 'mongoose';
 
 console.log(process.env.NODE_ENV);
 
 import app from './app.js';
+// eslint-disable-next-line no-unused-vars
+import prisma from '#database/prisma.js';
 
 export default app;
-
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD,
-).replace('<USER>', process.env.DATABASE_USER);
-
-connect(DB).then(() => console.log('✓ Conexión a base de datos exitosa'));
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {

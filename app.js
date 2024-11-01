@@ -6,23 +6,14 @@ import compression from 'compression';
 import morgan from 'morgan';
 import AppError from '#utils/appErrors.js';
 import globalErrorMiddleware from '#middleware/globalErrorMiddleware.js';
+import { login } from '#controllers/authController.js';
 
 const app = express();
 
 app.use(helmet());
-
-// 1) GLOBAL MIDDLEWARES
-
-// Add the body parser middleware here
 app.use(express.json());
-
-// 1) GLOBAL MIDDLEWARES
-// Implement CORS
 app.use(cors());
-
 app.use(morgan('dev'));
-
-// Prevent parameter pollution
 app.use(
   hpp({
     whitelist: [
@@ -35,12 +26,13 @@ app.use(
     ],
   }),
 );
-
 app.use(compression());
 
 app.get('/', (req, res) => {
   res.status(200).send('OK');
 });
+
+app.post('/login', login);
 
 app.all('*', (req, res, next) => {
   next(
