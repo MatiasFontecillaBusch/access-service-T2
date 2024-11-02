@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable import/order */
 /* eslint-disable import/first */
 /* eslint-disable no-console */
 import dotenv from 'dotenv';
@@ -18,8 +20,12 @@ dotenv.config({ path: './.env' });
 console.log(process.env.NODE_ENV);
 
 import app from './app.js';
-// eslint-disable-next-line no-unused-vars
 import prisma from '#database/prisma.js';
+import initializeQueueConsumers from '#queue/index.js';
+
+initializeQueueConsumers().then(() =>
+  console.log('Conexión con RabbitMQ exitosa.'),
+);
 
 export default app;
 
@@ -28,6 +34,7 @@ const server = app.listen(port, () => {
   console.log(`- Entorno:      ${environments[process.env.NODE_ENV]}`);
   console.log(`- Puerto:       ${port}`);
   console.log(`- URL:          ${process.env.SERVER_URL}:${port}`);
+  console.log('Conexión con MS SQL Server exitosa.');
 });
 
 process.on('unhandledRejection', (err) => {
