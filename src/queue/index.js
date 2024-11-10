@@ -1,11 +1,8 @@
-import {
-  userPasswordUpdate,
-  userProfileUpdate,
-} from './consumers/usersConsumer.js';
+import { userPasswordUpdate, userCreate } from './consumers/usersConsumer.js';
 
 async function initializeQueueConsumers() {
   await userPasswordUpdate();
-  await userProfileUpdate();
+  await userCreate();
 }
 
 export default initializeQueueConsumers;

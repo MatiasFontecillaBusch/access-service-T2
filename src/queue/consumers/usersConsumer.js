@@ -20,12 +20,13 @@ export const userPasswordUpdate = async () => {
   });
 };
 
-export const userProfileUpdate = async () => {
+export const userCreate = async () => {
   const channel = await getChannel();
 
-  channel.consume('user-creation-queue', async (data) => {
+  channel.consume('user-create-queue', async (data) => {
     const content = JSON.parse(data.content);
-    console.log('Received message for creating user:', content);
+    content.hashedPassword = content.password;
+    delete content.password;
 
     try {
       await prisma.user.create({ data: content });
