@@ -1,53 +1,67 @@
-/* eslint-disable no-console */
+import fs from 'fs/promises';
 import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const rolesData = [
-    { name: 'Admin', description: 'Administrador con acceso completo' },
-    { name: 'User', description: 'Usuario regular con acceso limitado' },
-  ];
+async function seedRoles() {
+  const registeredRoles = await prisma.role.findMany();
+  if (registeredRoles.length > 0) {
+    await prisma.role.deleteMany();
+  }
 
-  const [roleAdmin, roleUser] = await Promise.all(
-    rolesData.map((role) => prisma.role.create({ data: role })),
-  );
-
-  // Lista de usuarios
-  const usersData = [
-    {
-      email: 'admin@example.com',
-      password: 'a',
-      roleId: roleAdmin.id,
-    },
-    {
-      email: 'user@example.com',
-      password: 'a',
-      roleId: roleUser.id,
-    },
-  ];
-
+  const data = await fs.readFile('./mock/Roles.json', 'utf-8');
+  const roles = JSON.parse(data);
+  const cleanedRoles = roles.map((rol) => ({
+    id: rol.id,
+    name: rol.name,
+    description: rol.description,
+  }));
   await Promise.all(
-    usersData.map(async (user) => {
-      const hashedPassword = await hash(user.password, 10);
-      await prisma.user.create({
+    cleanedRoles.map((role) =>
+      prisma.role.create({
         data: {
-          email: user.email,
-          hashedPassword,
-          roleId: user.roleId,
+          ...role,
         },
-      });
-    }),
+      }),
+    ),
   );
+}
 
-  console.log('Datos de seed creados exitosamente');
+async function seedUsers() {
+  const registeredUsers = await prisma.user.findMany();
+  if (registeredUsers.length > 0) {
+    await prisma.user.deleteMany();
+  }
+
+  const data = await fs.readFile('./mock/Users.json', 'utf-8');
+  const users = JSON.parse(data);
+  const cleanedUsers = users.map((user) => ({
+    id: user.id,
+    email: user.email,
+    hashedPassword: user.hashedPassword,
+    roleId: user.roleId,
+  }));
+  await Promise.all(
+    cleanedUsers.map((user) =>
+      prisma.user.create({
+        data: {
+          ...user,
+        },
+      }),
+    ),
+  );
+}
+
+async function main() {
+  console.log('Seeding database...');
+  await seedRoles();
+  await seedUsers();
+  console.log('Database seeded');
 }
 
 main()
   .catch((e) => {
-    console.error(e);
-    process.exit(1);
+    console.error('Error seeding database:', e);
   })
   .finally(async () => {
     await prisma.$disconnect();
