@@ -6,7 +6,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import AppError from '#utils/appErrors.js';
 import globalErrorMiddleware from '#middleware/globalErrorMiddleware.js';
-import { login } from '#controllers/authController.js';
+import { authenticate, login } from '#controllers/authController.js';
 
 const app = express();
 
@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login', login);
+app.post('/auth', authenticate);
 
 app.all('*', (req, res, next) => {
   next(

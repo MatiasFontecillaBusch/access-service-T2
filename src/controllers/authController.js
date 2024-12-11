@@ -33,3 +33,33 @@ export const login = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+export const authenticate = catchAsync(async (req, res, next) => {
+  const { token } = req.body;
+
+  if (!token) {
+    throw new AppError('El token es requerido', 400);
+  }
+
+  let decoded;
+  try {
+    decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    return next(new AppError('Token inválido o expirado', 401));
+  }
+
+  const userId = decoded.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError('El usuario ya no existe', 401);
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: user,
+  });
+});
