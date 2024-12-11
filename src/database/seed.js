@@ -5,11 +5,6 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function seedRoles() {
-  const registeredRoles = await prisma.role.findMany();
-  if (registeredRoles.length > 0) {
-    await prisma.role.deleteMany();
-  }
-
   const data = await fs.readFile('./mock/Roles.json', 'utf-8');
   const roles = JSON.parse(data);
   const cleanedRoles = roles.map((rol) => ({
@@ -29,11 +24,6 @@ async function seedRoles() {
 }
 
 async function seedUsers() {
-  const registeredUsers = await prisma.user.findMany();
-  if (registeredUsers.length > 0) {
-    await prisma.user.deleteMany();
-  }
-
   const data = await fs.readFile('./mock/Users.json', 'utf-8');
   const users = JSON.parse(data);
   const cleanedUsers = users.map((user) => ({
@@ -55,6 +45,8 @@ async function seedUsers() {
 
 async function main() {
   console.log('Seeding database...');
+  await prisma.user.deleteMany();
+  await prisma.role.deleteMany();
   await seedRoles();
   await seedUsers();
   console.log('Database seeded');
