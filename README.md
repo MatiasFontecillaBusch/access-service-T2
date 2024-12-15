@@ -35,9 +35,13 @@ Este servicio forma parte del Taller 2 de Arquitectura de Sistemas.
    npx prisma generate
    ```
 
-   Este cliente se utilizará en el código para interactuar con la base de datos.
 
-5. Ejecuta el comando para iniciar el servicio:
+5. Ejecuta el comando para llenar la base de datos:
+   ```bash
+   npm run seed
+   ``` 
+
+6. Ejecuta el comando para iniciar el servicio:
    ```bash
    npm start
    ``` 
