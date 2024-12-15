@@ -36,3 +36,9 @@ model Role {
 
   users       User[]   
 }
+
+model JWTBlacklist {
+  id        String   @id @default(dbgenerated("(newid())")) @db.UniqueIdentifier
+  token     String   @unique @db.VarChar(500)
+  createdAt DateTime @default(now())
+}

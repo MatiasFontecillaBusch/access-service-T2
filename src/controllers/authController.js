@@ -41,6 +41,15 @@ export const authenticate = catchAsync(async (req, res, next) => {
     throw new AppError('El token es requerido', 400);
   }
 
+  const blacklistedToken = await prisma.jWTBlacklist.findUnique({
+    where: { token },
+  });
+  if (blacklistedToken) {
+    return res
+      .status(403)
+      .json({ message: 'El Token se encuentra en la blacklist' });
+  }
+
   let decoded;
   try {
     decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
@@ -55,11 +64,25 @@ export const authenticate = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
-    throw new AppError('El usuario ya no existe', 401);
+    throw new AppError('El usuario no existe', 401);
   }
 
   res.status(200).json({
     status: 'success',
     data: user,
   });
+});
+
+export const logout = catchAsync(async (req, res, next) => {
+  const { token } = req.body;
+
+  if (!token) {
+    throw new AppError('El token es requerido', 400);
+  }
+
+  await prisma.jWTBlacklist.create({
+    data: { token },
+  });
+
+  return res.status(204).json('');
 });
