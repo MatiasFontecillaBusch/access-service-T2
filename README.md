@@ -33,6 +33,7 @@ Este servicio forma parte del Taller 2 de Arquitectura de Sistemas.
 
    ```bash
    npx prisma generate
+   npx prisma migrate dev
    ```
 
 
